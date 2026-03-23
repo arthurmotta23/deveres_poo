@@ -1,0 +1,112 @@
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+class AtivoCampo {
+private:
+    string tag; 
+    bool bloqueado;
+
+public:
+    AtivoCampo(string t, bool b) {
+        tag = t;
+        bloqueado = b;
+    }
+
+    string getTag() const {
+        return tag;
+    }
+
+    bool isBloqueado() const {
+        return bloqueado;
+    }
+
+    void setBloqueado(bool b) {
+        bloqueado = b;
+    }
+};
+
+class SensorNivel : public AtivoCampo {
+private:
+    float nivel;
+
+public:
+    SensorNivel(string t, bool b, float n)
+        : AtivoCampo(t, b) {
+        nivel = n;
+    }
+
+    void setNivel(float n) {
+        if (!isBloqueado() && n >= 0) {
+            nivel = n;
+        } else {
+            cout << "Nao foi possivel alterar o nivel do sensor " << getTag() << endl;
+        }
+    }
+
+    float getNivel() const {
+        return nivel;
+    }
+
+    friend void inspecionarSensor(const SensorNivel& s);
+};
+
+class BombaDosadora : public AtivoCampo {
+private:
+    float vazao;
+
+public:
+    BombaDosadora(string t, bool b, float v)
+        : AtivoCampo(t, b) {
+        vazao = v;
+    }
+
+    void setVazao(float v) {
+        if (!isBloqueado() && v >= 0) {
+            vazao = v;
+        } else {
+            cout << "Nao foi possivel alterar a vazao da bomba " << getTag() << endl;
+        }
+    }
+
+    float getVazao() const {
+        return vazao;
+    }
+};
+
+void inspecionarSensor(const SensorNivel& s) {
+    cout << "[INSPECAO TECNICA] Sensor: " << s.getTag()
+         << " | Nivel: " << s.nivel
+         << " | Bloqueado: " << (s.isBloqueado() ? "Sim" : "Nao")
+         << endl;
+}
+
+int main() {
+    SensorNivel sensor1("SN-01", false, 10.5);
+    BombaDosadora bomba1("BD-01", false, 3.2);
+
+    sensor1.setNivel(15.0);
+    bomba1.setVazao(5.0);
+
+    sensor1.setBloqueado(true);
+    sensor1.setNivel(20.0);
+
+    cout << "\n===== RESUMO DOS ATIVOS =====" << endl;
+
+    cout << "Sensor -> Tag: " << sensor1.getTag()
+         << " | Nivel: " << sensor1.getNivel()
+         << " | Bloqueado: " << (sensor1.isBloqueado() ? "Sim" : "Nao")
+         << endl;
+
+    cout << "Bomba -> Tag: " << bomba1.getTag()
+         << " | Vazao: " << bomba1.getVazao()
+         << " | Bloqueado: " << (bomba1.isBloqueado() ? "Sim" : "Nao")
+         << endl;
+
+    cout << "=============================" << endl;
+
+    inspecionarSensor(sensor1);
+
+    return 0;
+}
